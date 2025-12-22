@@ -1,26 +1,70 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { CompetitionProvider } from './competitionProvider';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    console.log('AI Competition Workspace가 활성화되었습니다!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ai-competition-workspace" is now active!');
+    // TreeDataProvider 생성
+    const competitionProvider = new CompetitionProvider();
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('ai-competition-workspace.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ai-competition-workspace!');
-	});
+    // TreeView 등록
+    const treeView = vscode.window.createTreeView('competitionExplorer', {
+        treeDataProvider: competitionProvider,
+        showCollapseAll: true
+    });
 
-	context.subscriptions.push(disposable);
+    // Hello World 커맨드
+    const helloCmd = vscode.commands.registerCommand('aiWorkspace.helloWorld', () => {
+        vscode.window.showInformationMessage('안녕하세요! AI Competition Workspace입니다.');
+    });
+
+    // Create Project 커맨드
+    const createProjectCmd = vscode.commands.registerCommand('aiWorkspace.createProject', async () => {
+        const projectName = await vscode.window.showInputBox({
+            prompt: '프로젝트 이름을 입력하세요',
+            placeHolder: 'my-kaggle-project',
+            validateInput: (text) => {
+                if (!text) {
+                    return '이름을 입력해주세요';
+                }
+                if (text.includes(' ')) {
+                    return '공백은 사용할 수 없습니다';
+                }
+                return null;
+            }
+        });
+
+        if (!projectName) {
+            return;
+        }
+
+        const framework = await vscode.window.showQuickPick(
+            ['PyTorch', 'TensorFlow', 'scikit-learn', 'LightGBM'],
+            { placeHolder: '사용할 프레임워크를 선택하세요' }
+        );
+
+        if (!framework) {
+            return;
+        }
+
+        vscode.window.showInformationMessage(
+            `프로젝트 '${projectName}'이 ${framework} 프레임워크로 생성됩니다!`
+        );
+    });
+
+    // Refresh 커맨드
+    const refreshCmd = vscode.commands.registerCommand('aiWorkspace.refreshExplorer', () => {
+        competitionProvider.refresh();
+        vscode.window.showInformationMessage('새로고침 완료!');
+    });
+
+    // 모두 subscriptions에 등록
+    context.subscriptions.push(
+        treeView,
+        helloCmd,
+        createProjectCmd,
+        refreshCmd
+    );
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

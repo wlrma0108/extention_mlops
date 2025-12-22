@@ -1,23 +1,61 @@
 {
   "name": "ai-competition-workspace",
-  "displayName": "ai-competition-workspace",
+  "displayName": "AI Competition Workspace",
   "description": "AI Competition Workspace Manager",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {
+   "contributes": {
     "commands": [
       {
-        "command": "ai-competition-workspace.helloWorld",
-        "title": "Hello World"
+        "command": "aiWorkspace.helloWorld",
+        "title": "Hello World",
+        "category": "AI Competition"
+      },
+      {
+        "command": "aiWorkspace.createProject",
+        "title": "Create New Project",
+        "category": "AI Competition"
+      },
+      {
+        "command": "aiWorkspace.refreshExplorer",
+        "title": "Refresh",
+        "category": "AI Competition",
+        "icon": "$(refresh)"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiCompetition",
+          "title": "AI Competition",
+          "icon": "$(beaker)"
+        }
+      ]
+    },
+    "views": {
+      "aiCompetition": [
+        {
+          "id": "competitionExplorer",
+          "name": "Competitions"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "aiWorkspace.refreshExplorer",
+          "when": "view == competitionExplorer",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -28,13 +66,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.107.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "typescript-eslint": "^8.48.1",
-    "eslint": "^9.39.1",
-    "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8"
   }
 }
