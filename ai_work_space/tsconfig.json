@@ -1,7 +1,0 @@
-{
-  "activationEvents": [
-    "workspaceContains:**/kaggle.json",
-    "workspaceContains:**/*.ipynb",
-    "onCommand:aiWorkspace.createProject"
-  ]
-}
