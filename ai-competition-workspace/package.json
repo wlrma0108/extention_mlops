@@ -11,7 +11,7 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-   "contributes": {
+  "contributes": {
     "commands": [
       {
         "command": "aiWorkspace.helloWorld",
@@ -28,6 +28,17 @@
         "title": "Refresh",
         "category": "AI Competition",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "aiWorkspace.runExperiment",
+        "title": "Run Experiment",
+        "category": "AI Competition",
+        "icon": "$(play)"
+      },
+      {
+        "command": "aiWorkspace.viewDetails",
+        "title": "View Details",
+        "category": "AI Competition"
       }
     ],
     "viewsContainers": {
@@ -53,6 +64,21 @@
           "command": "aiWorkspace.refreshExplorer",
           "when": "view == competitionExplorer",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "aiWorkspace.runExperiment",
+          "when": "view == competitionExplorer && viewItem == experiment",
+          "group": "inline"
+        },
+        {
+          "command": "aiWorkspace.viewDetails",
+          "when": "view == competitionExplorer && viewItem == experiment"
+        },
+        {
+          "command": "aiWorkspace.createProject",
+          "when": "view == competitionExplorer && viewItem == competition"
         }
       ]
     }

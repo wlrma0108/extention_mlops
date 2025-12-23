@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CompetitionProvider } from './competitionProvider';
+import { CompetitionProvider, CompetitionItem } from './competitionProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('AI Competition Workspace가 활성화되었습니다!');
@@ -58,12 +58,78 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('새로고침 완료!');
     });
 
+    // Run Experiment 커맨드
+    const runExperimentCmd = vscode.commands.registerCommand(
+        'aiWorkspace.runExperiment',
+        async (item?: CompetitionItem) => {
+            // 트리에서 클릭했으면 item이 넘어옴
+            const experimentName = item?.label || 'Unknown Experiment';
+
+            // 진행 상황 표시와 함께 실행
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: `실험 '${experimentName}' 실행 중...`,
+                cancellable: true
+            }, async (progress, token) => {
+                // 취소 감지
+                token.onCancellationRequested(() => {
+                    vscode.window.showWarningMessage('실험이 취소되었습니다.');
+                });
+
+                // 진행 상황 시뮬레이션
+                for (let i = 0; i <= 100; i += 20) {
+                    if (token.isCancellationRequested) {
+                        return;
+                    }
+
+                    progress.report({ 
+                        increment: 20, 
+                        message: `${i}% 완료` 
+                    });
+
+                    // 1초 대기 (실제로는 학습 로직)
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                vscode.window.showInformationMessage(
+                    `실험 '${experimentName}' 완료! 🎉`
+                );
+            });
+        }
+    );
+
+    // View Details 커맨드
+    const viewDetailsCmd = vscode.commands.registerCommand(
+        'aiWorkspace.viewDetails',
+        (item?: CompetitionItem) => {
+            if (!item) {
+                vscode.window.showErrorMessage('실험을 선택해주세요.');
+                return;
+            }
+
+            // 상세 정보를 QuickPick으로 표시
+            const details = [
+                `📊 실험명: ${item.label}`,
+                `📈 점수: ${item.score?.toFixed(4) || 'N/A'}`,
+                `📅 생성일: ${new Date().toLocaleDateString()}`,
+                `⚙️ 상태: 완료`
+            ];
+
+            vscode.window.showQuickPick(details, {
+                placeHolder: `${item.label} 상세 정보`,
+                canPickMany: false
+            });
+        }
+    );
+
     // 모두 subscriptions에 등록
     context.subscriptions.push(
         treeView,
         helloCmd,
         createProjectCmd,
-        refreshCmd
+        refreshCmd,
+        runExperimentCmd,
+        viewDetailsCmd
     );
 }
 
